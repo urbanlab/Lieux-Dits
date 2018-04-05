@@ -1,0 +1,214 @@
+int AvatarPosX;
+int AvatarPosY;
+int AvatarW, AvatarH;
+
+private static final int SOMMEIL = 0;
+private static final int WAKE_UP = 1;
+private static final int WAIT_ANSWER_1 = 2;
+private static final int THINK =3;
+private static final int EXPLAIN_1 = 4;
+private static final int PAUSE = 5;
+private static final int WAIT_ANSWER_2 = 6;
+private static final int EXPLAIN_2 =7;
+private static final int INVITE_1 =8;
+private static final int WAIT_INVITE_1 =9;
+private static final int INVITE_2 =10;
+private static final int WAIT_INVITE_2 =11;
+private static final int BUG =12;
+
+int Ava=SOMMEIL;
+int Previous=-1;
+boolean Change=false;
+float Timer=0.0;
+
+void Avatar()
+{
+  //TODO: conditions raz si plus personne
+  imageMode(CENTER);
+  AvatarPosX=(width/2-80);
+  //if (ModeDebug) AvatarPosY=(height/2+200);
+  //else AvatarPosY=(height/2-100);
+  AvatarPosY=(1000);
+  
+  AvatarW=1800;
+  AvatarH=1300;
+
+  if (Ava != Previous) 
+  {
+    Change=true;
+    Timer=0;
+  } else Change=false;
+  Previous=Ava;
+
+  if (Timer<30000) Timer++;
+
+  switch(Ava)
+  {
+  case SOMMEIL:
+    if (Change) 
+    {
+      println("SOMMEIL");
+      Sommeil.loop();
+      ActiveGuys=0;
+    }
+    //image(Sommeil, AvatarPosX, AvatarPosY, AvatarW, AvatarH);
+    image(Sommeil, AvatarPosX, AvatarPosY);
+    if (ActiveGuys==0) Timer=0;
+    if (Timer > 1) 
+    {
+      Sommeil.stop();
+      Ava=EXPLAIN_1;
+    }
+    break;
+    
+  case WAKE_UP:
+    if (Change) println("WAKE_UP");
+    Wake_up.play();
+    
+    image(Wake_up, AvatarPosX, AvatarPosY);
+    
+    if (Wake_up.time()>=Wake_up.duration()-3)
+    {
+      Ava=WAIT_ANSWER_1;
+       Wake_up.stop();
+    }
+    break;
+  case WAIT_ANSWER_1:
+    if (Change) 
+    {
+      println("WAIT_ANSWER_1");
+      Sommeil.loop();
+    }
+    image(Sommeil, AvatarPosX, AvatarPosY);
+    if (Start) Ava= THINK;
+    break;
+
+  case THINK:
+    if (Change) 
+    {
+      println("THINK");
+    }
+    Think.play();
+    image(Think, AvatarPosX, AvatarPosY, AvatarW, AvatarH);
+    if (Think.time()>=Think.duration()-0.1)
+    {
+      Think.stop();
+      Ava=EXPLAIN_1;
+    }
+    break;
+
+  case EXPLAIN_1:
+    if (Change) 
+    {
+      println("EXPLAIN_1");
+    }
+    Explain1.play();
+    image(Explain1, AvatarPosX, AvatarPosY, AvatarW, AvatarH);
+    //if ((Timer > 1000) && MirrorOn) 
+    println(Timer);
+    
+    if (Explain1.time()>=Explain1.duration()-0.1)
+    {
+      Explain1.stop();
+      Ava=SOMMEIL;
+    }
+    if (Timer > 1000)
+    {
+      Explain1.stop();
+      Ava=PAUSE;
+    }
+    break;
+
+  case PAUSE:
+    if (Change) 
+    {
+      println("PAUSE");
+    }
+    Pause.play();
+    image(Pause, AvatarPosX, AvatarPosY, AvatarW, AvatarH);
+    if (Pause.time()>=Pause.duration()-0.1)
+    {
+      Pause.stop();
+      if (!MirrorOn) Ava=WAIT_ANSWER_2;
+      //if((SensorUS==0) ) Ava=WAIT_ANSWER_2;
+      else Ava=INVITE_1;
+    }
+    break;
+
+  case WAIT_ANSWER_2:
+    if (Change) 
+    {
+      println(" WAIT_ANSWER_2");
+      Sommeil.loop();
+    }
+    image(Sommeil, AvatarPosX, AvatarPosY, AvatarW, AvatarH);
+    if (Start) Ava=EXPLAIN_2 ;
+    break;
+
+  case EXPLAIN_2:
+    if (Change) 
+    {
+      println("EXPLAIN_2");
+    }
+    Explain2.play();
+    image(Explain2, AvatarPosX, AvatarPosY, AvatarW, AvatarH);
+    if (Explain2.time()>=Explain2.duration()-0.1)
+    {
+      Explain2.stop();
+      Ava=SOMMEIL;
+    }
+    break;
+
+  case INVITE_1:
+    if (Change) 
+    {
+      println("INVITE_1");
+    }
+    Invite.play();
+    image(Invite, AvatarPosX, AvatarPosY, AvatarW, AvatarH);
+    if (Invite.time() >= Invite.duration()-0.1)
+    {
+      Invite.stop();
+      Ava=WAIT_INVITE_1;
+    }
+    break;
+
+  case WAIT_INVITE_1:
+    if (Change) 
+    {
+      println("WAIT_INVITE_1");
+    }
+    Sommeil.play();
+    image( Sommeil, AvatarPosX, AvatarPosY, AvatarW, AvatarH);
+    if (Sommeil.time()>=Sommeil.duration()-0.1)
+    {
+      Sommeil.stop();
+      Ava=BUG;
+    }
+    break;
+
+  case INVITE_2:
+    if (Change) 
+    {
+      println("INVITE_2");
+    }
+    break;
+
+  case WAIT_INVITE_2:
+    if (Change) 
+    {
+      println("WAIT_INVITE_2");
+    }
+    break;
+
+  case BUG:
+    if (Change) 
+    {
+      println("BUG");
+      Bug.loop();
+    }
+    image( Bug, AvatarPosX, AvatarPosY, AvatarW, AvatarH);
+    if (!Presence) Ava= SOMMEIL;
+    break;
+  }
+}
